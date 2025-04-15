@@ -11,7 +11,7 @@ cloudinary.config({
 export const uploadMedia = async (file) => {
   try {
     const uploadResponse = await cloudinary.uploader.upload(file, {
-      resource_type: "video", // Specify video resource type
+      resource_type: "image", // Ensure resource type is set to image
     });
     return uploadResponse;
   } catch (error) {

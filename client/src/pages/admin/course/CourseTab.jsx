@@ -98,22 +98,32 @@ const CourseTab = () => {
     formData.append("category", input.category);
     formData.append("courseLevel", input.courseLevel);
     formData.append("coursePrice", input.coursePrice);
-    formData.append("courseThumbnail", input.courseThumbnail);
+    if (input.courseThumbnail) {
+      formData.append("courseThumbnail", input.courseThumbnail); // Append the photo
+    }
 
-    await editCourse({ formData, courseId });
+    try {
+      const response = await editCourse({ formData, courseId });
+      if (response.data) {
+        refetch();
+        toast.success(response.data.message || "Course updated successfully.");
+      }
+    } catch (error) {
+      toast.error("Failed to update course");
+    }
   };
 
   const publishStatusHandler = async (action) => {
     try {
-      const response = await publishCourse({courseId, query:action});
-      if(response.data){
-        refetch();
+      const response = await publishCourse({ courseId, query: action });
+      if (response.data) {
+        refetch(); // Refetch course data to reflect the updated publish status
         toast.success(response.data.message);
       }
     } catch (error) {
       toast.error("Failed to publish or unpublish course");
     }
-  }
+  };
 
   useEffect(() => {
     if (isSuccess) {
@@ -136,8 +146,17 @@ const CourseTab = () => {
           </CardDescription>
         </div>
         <div className="space-x-2">
-          <Button disabled={courseByIdData?.course.lectures.length === 0} variant="outline" onClick={()=> publishStatusHandler(courseByIdData?.course.isPublished ? "false" : "true")}>
-            {courseByIdData?.course.isPublished ? "Unpublished" : "Publish"}
+          <Button
+            onClick={() => publishStatusHandler("true")}
+            disabled={courseByIdData?.course.isPublished} // Disable if already published
+          >
+            Publish
+          </Button>
+          <Button
+            onClick={() => publishStatusHandler("false")}
+            disabled={!courseByIdData?.course.isPublished} // Disable if already unpublished
+          >
+            Unpublish
           </Button>
           <Button>Remove Course</Button>
         </div>

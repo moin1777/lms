@@ -7,7 +7,7 @@ import {
   useInCompleteCourseMutation,
   useUpdateLectureProgressMutation,
 } from "@/features/api/courseProgressApi";
-import { CheckCircle, CheckCircle2, CirclePlay } from "lucide-react";
+import { CheckCircle2, CirclePlay } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -15,29 +15,22 @@ import { toast } from "sonner";
 const CourseProgress = () => {
   const params = useParams();
   const courseId = params.courseId;
-  const { data, isLoading, isError, refetch } =
-    useGetCourseProgressQuery(courseId);
+  const { data, isLoading, isError, refetch } = useGetCourseProgressQuery(courseId);
 
   const [updateLectureProgress] = useUpdateLectureProgressMutation();
-  const [
-    completeCourse,
-    { data: markCompleteData, isSuccess: completedSuccess },
-  ] = useCompleteCourseMutation();
-  const [
-    inCompleteCourse,
-    { data: markInCompleteData, isSuccess: inCompletedSuccess },
-  ] = useInCompleteCourseMutation();
+  const [completeCourse, { data: markCompleteData, isSuccess: completedSuccess }] =
+    useCompleteCourseMutation();
+  const [inCompleteCourse, { data: markInCompleteData, isSuccess: inCompletedSuccess }] =
+    useInCompleteCourseMutation();
 
   useEffect(() => {
-    console.log(markCompleteData);
-
     if (completedSuccess) {
       refetch();
-      toast.success(markCompleteData.message);
+      toast.success(markCompleteData?.message || "Course marked as complete.");
     }
     if (inCompletedSuccess) {
       refetch();
-      toast.success(markInCompleteData.message);
+      toast.success(markInCompleteData?.message || "Course marked as incomplete.");
     }
   }, [completedSuccess, inCompletedSuccess]);
 
@@ -86,13 +79,16 @@ const CourseProgress = () => {
         <div className="flex-1 md:w-3/5 h-fit rounded-lg shadow-lg p-4">
           {currentLecture?.videoUrl || lectures[0]?.videoUrl ? (
             <video
-              src={currentLecture?.videoUrl || lectures[0]?.videoUrl} // Ensure the video URL is correct
+              src={currentLecture?.videoUrl || lectures[0]?.videoUrl}
               controls
               className="w-full h-auto md:rounded-lg"
+              onError={(e) => {
+                console.error("Video failed to load:", e.target.src);
+              }}
               onPlay={() => handleLectureProgress(currentLecture?._id || lectures[0]?._id)}
             />
           ) : (
-            <p className="text-center text-gray-500">No video available</p> // Fallback if no video URL
+            <p className="text-center text-gray-500">No video available</p>
           )}
           <div className="mt-2">
             <h3 className="font-medium text-lg">
