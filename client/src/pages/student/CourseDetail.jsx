@@ -23,36 +23,34 @@ const CourseDetail = () => {
     useGetCourseDetailWithStatusQuery(courseId);
 
   if (isLoading) return <h1>Loading...</h1>;
-  if (isError) return <h>Failed to load course details</h>;
+  if (isError || !data || !data.course) return <h1>Failed to load course details</h1>; // Added check for !data.course
 
-  const { course, purchased } = data;
+  const { course, purchased } = data; // Safe destructuring after ensuring data and course are defined
   console.log(purchased);
 
   const handleContinueCourse = () => {
-    if(purchased){
-      navigate(`/course-progress/${courseId}`)
+    if (purchased) {
+      navigate(`/course-progress/${courseId}`);
     }
-  }
+  };
 
   return (
     <div className="space-y-5">
       <div className="bg-[#2D2F31] text-white">
         <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 flex flex-col gap-2">
-          <h1 className="font-bold text-2xl md:text-3xl">
-            {course?.courseTitle}
-          </h1>
-          <p className="text-base md:text-lg">Course Sub-title</p>
+          <h1 className="font-bold text-2xl md:text-3xl">{course?.courseTitle || "No Title Available"}</h1>
+          <p className="text-base md:text-lg">{course?.subTitle || "No subtitle available"}</p>
           <p>
             Created By{" "}
             <span className="text-[#C0C4FC] underline italic">
-              {course?.creator.name}
+              {course?.creator?.name || "Unknown"}
             </span>
           </p>
           <div className="flex items-center gap-2 text-sm">
             <BadgeInfo size={16} />
-            <p>Last updated {course?.createdAt.split("T")[0]}</p>
+            <p>Last updated {course?.createdAt?.split("T")[0] || "N/A"}</p>
           </div>
-          <p>Students enrolled: {course?.enrolledStudents.length}</p>
+          <p>Students enrolled: {course?.enrolledStudents?.length || 0}</p>
         </div>
       </div>
       <div className="max-w-7xl mx-auto my-5 px-4 md:px-8 flex flex-col lg:flex-row justify-between gap-10">
@@ -60,7 +58,7 @@ const CourseDetail = () => {
           <h1 className="font-bold text-xl md:text-2xl">Description</h1>
           <p
             className="text-sm"
-            dangerouslySetInnerHTML={{ __html: course.description }}
+            dangerouslySetInnerHTML={{ __html: course?.description || "No description available" }}
           />
           <Card>
             <CardHeader>
@@ -83,14 +81,21 @@ const CourseDetail = () => {
           <Card>
             <CardContent className="p-4 flex flex-col">
               <div className="w-full aspect-video mb-4">
-                <ReactPlayer
-                  width="100%"
-                  height={"100%"}
-                  url={course.lectures[0].videoUrl}
-                  controls={true}
-                />
+                {course.lectures && course.lectures.length > 0 ? (
+                  <>
+                    {console.log("Video URL:", course.lectures[0].videoUrl)} {/* Debugging */}
+                    <ReactPlayer
+                      width="100%"
+                      height="100%"
+                      url={course.lectures[0].videoUrl} // Ensure the video URL is correct
+                      controls={true}
+                    />
+                  </>
+                ) : (
+                  <p className="text-center text-gray-500">No video available</p>
+                )}
               </div>
-              <h1>Lecture title</h1>
+              <h1>{course.lectures && course.lectures.length > 0 ? course.lectures[0].lectureTitle : "No Lecture Title"}</h1>
               <Separator className="my-2" />
               <h1 className="text-lg md:text-xl font-semibold">Course Price</h1>
             </CardContent>

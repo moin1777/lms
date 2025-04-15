@@ -10,9 +10,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import Lecture from "./Lecture";
+import axios from "axios";
 
 const CreateLecture = () => {
   const [lectureTitle, setLectureTitle] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const params = useParams();
   const courseId = params.courseId;
   const navigate = useNavigate();
@@ -27,8 +29,38 @@ const CreateLecture = () => {
     refetch,
   } = useGetCourseLectureQuery(courseId);
 
+  const handleVideoUpload = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/media/upload-video",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      if (response.data.success) {
+        toast.success("Video uploaded successfully.");
+        return response.data.data; // Return video URL and public ID
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to upload video.");
+    }
+  };
+
   const createLectureHandler = async () => {
-    await createLecture({ lectureTitle, courseId });
+    const videoData = await handleVideoUpload(selectedFile); // Upload video first
+    if (videoData) {
+      await createLecture({
+        lectureTitle,
+        courseId,
+        videoUrl: videoData.url,
+        publicId: videoData.public_id,
+      });
+    }
   };
 
   useEffect(() => {
@@ -62,6 +94,14 @@ const CreateLecture = () => {
             value={lectureTitle}
             onChange={(e) => setLectureTitle(e.target.value)}
             placeholder="Your Title Name"
+          />
+        </div>
+        <div>
+          <Label>Video</Label>
+          <Input
+            type="file"
+            accept="video/*"
+            onChange={(e) => setSelectedFile(e.target.files[0])}
           />
         </div>
         <div className="flex items-center gap-2">

@@ -11,16 +11,17 @@ cloudinary.config({
 export const uploadMedia = async (file) => {
   try {
     const uploadResponse = await cloudinary.uploader.upload(file, {
-      resource_type: "auto",
+      resource_type: "video", // Specify video resource type
     });
     return uploadResponse;
   } catch (error) {
     console.log(error);
   }
 };
+
 export const deleteMediaFromCloudinary = async (publicId) => {
   try {
-    await cloudinary.uploader.destroy(publicId);
+    await cloudinary.uploader.destroy(publicId, { resource_type: "video" });
   } catch (error) {
     console.log(error);
   }
