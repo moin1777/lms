@@ -25,8 +25,13 @@ const Login = () => {
     name: "",
     email: "",
     password: "",
+    role: "student", // Default role
   });
-  const [loginInput, setLoginInput] = useState({ email: "", password: "" });
+  const [loginInput, setLoginInput] = useState({
+    email: "",
+    password: "",
+    role: "student", // Default role
+  });
 
   const [
     registerUser,
@@ -110,7 +115,7 @@ const Login = () => {
                   value={signupInput.name}
                   onChange={(e) => changeInputHandler(e, "signup")}
                   placeholder="Eg. patel"
-                  required="true"
+                  required
                 />
               </div>
               <div className="space-y-1">
@@ -121,7 +126,7 @@ const Login = () => {
                   value={signupInput.email}
                   onChange={(e) => changeInputHandler(e, "signup")}
                   placeholder="Eg. patel@gmail.com"
-                  required="true"
+                  required
                 />
               </div>
               <div className="space-y-1">
@@ -132,8 +137,20 @@ const Login = () => {
                   value={signupInput.password}
                   onChange={(e) => changeInputHandler(e, "signup")}
                   placeholder="Eg. xyz"
-                  required="true"
+                  required
                 />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="role">Role</Label>
+                <select
+                  name="role"
+                  value={signupInput.role}
+                  onChange={(e) => changeInputHandler(e, "signup")}
+                  className="border rounded px-2 py-1 w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                >
+                  <option value="student">Student</option>
+                  <option value="instructor">Instructor</option>
+                </select>
               </div>
             </CardContent>
             <CardFooter>
@@ -170,7 +187,7 @@ const Login = () => {
                   value={loginInput.email}
                   onChange={(e) => changeInputHandler(e, "login")}
                   placeholder="Eg. patel@gmail.com"
-                  required="true"
+                  required
                 />
               </div>
               <div className="space-y-1">
@@ -181,8 +198,20 @@ const Login = () => {
                   value={loginInput.password}
                   onChange={(e) => changeInputHandler(e, "login")}
                   placeholder="Eg. xyz"
-                  required="true"
+                  required
                 />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="role">Role</Label>
+                <select
+                  name="role"
+                  value={loginInput.role}
+                  onChange={(e) => changeInputHandler(e, "login")}
+                  className="border rounded px-2 py-1 w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                >
+                  <option value="student">Student</option>
+                  <option value="instructor">Instructor</option>
+                </select>
               </div>
             </CardContent>
             <CardFooter>

@@ -15,17 +15,20 @@ dotenv.config();
 connectDB();
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Ensure the port is set to 3000
 
 // default middleware
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true
-}));
- 
+// Configure CORS
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Replace with your frontend's URL
+    credentials: true, // Allow cookies to be sent with requests
+  })
+);
+
 // apis
 app.use("/api/v1/media", mediaRoute);
 app.use("/api/v1/user", userRoute);
@@ -35,7 +38,7 @@ app.use("/api/v1/progress", courseProgressRoute);
  
  
 app.listen(PORT, () => {
-    console.log(`Server listen at port ${PORT}`);
+    console.log(`Server listening at port ${PORT}`);
 })
 
 
