@@ -24,8 +24,8 @@ Welcome to the **LMS Full Stack**! This project is a comprehensive Learning Mana
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/moin1777/lms_full_stack_final.git
-    cd lms_full_stack_final
+    git clone https://github.com/moin1777/lms.git
+    cd lms
     ```
 
 2. Install dependencies for both frontend and backend:
@@ -81,10 +81,6 @@ Contributions are welcome! Please follow these steps:
     git push origin feature-name
     ```
 5. Open a pull request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
