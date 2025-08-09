@@ -6,6 +6,13 @@ const router = express.Router();
 
 router.post("/upload-video", upload.single("file"), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file provided for upload.",
+      });
+    }
+
     const result = await uploadMedia(req.file.path);
     res.status(200).json({
       success: true,
@@ -13,8 +20,8 @@ router.post("/upload-video", upload.single("file"), async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Error uploading video" });
+    console.log("Video Upload Route Error:", error); // Log the error for debugging
+    res.status(500).json({ success: false, message: "Error uploading video" });
   }
 });
 

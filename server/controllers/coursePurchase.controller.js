@@ -52,6 +52,7 @@ export const createCheckoutSession = async (req, res) => {
       orderId: order.id, // Return the Razorpay order ID
       amount: order.amount,
       currency: order.currency,
+      key: process.env.RAZORPAY_KEY_ID, // Include Razorpay key in the response
     });
   } catch (error) {
     console.log(error);

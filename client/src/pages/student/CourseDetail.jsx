@@ -19,14 +19,12 @@ const CourseDetail = () => {
   const params = useParams();
   const courseId = params.courseId;
   const navigate = useNavigate();
-  const { data, isLoading, isError } =
-    useGetCourseDetailWithStatusQuery(courseId);
+  const { data, isLoading, isError } = useGetCourseDetailWithStatusQuery(courseId);
 
   if (isLoading) return <h1>Loading...</h1>;
-  if (isError || !data || !data.course) return <h1>Failed to load course details</h1>; // Added check for !data.course
+  if (isError || !data || !data.course) return <h1>Failed to load course details</h1>;
 
-  const { course, purchased } = data; // Safe destructuring after ensuring data and course are defined
-  console.log(purchased);
+  const { course, purchased } = data;
 
   const handleContinueCourse = () => {
     if (purchased) {
@@ -39,6 +37,7 @@ const CourseDetail = () => {
       <div className="bg-[#2D2F31] text-white">
         <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 flex flex-col gap-2">
           <h1 className="font-bold text-2xl md:text-3xl">{course?.courseTitle || "No Title Available"}</h1>
+          <p className="text-lg font-bold">Price: ₹{course?.coursePrice || "N/A"}</p>
           <p className="text-base md:text-lg">{course?.subTitle || "No subtitle available"}</p>
           <p>
             Created By{" "}
@@ -63,13 +62,13 @@ const CourseDetail = () => {
           <Card>
             <CardHeader>
               <CardTitle>Course Content</CardTitle>
-              <CardDescription>4 lectures</CardDescription>
+              <CardDescription>{course.lectures.length} lectures</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {course.lectures.map((lecture, idx) => (
                 <div key={idx} className="flex items-center gap-3 text-sm">
                   <span>
-                    {true ? <PlayCircle size={14} /> : <Lock size={14} />}
+                    {purchased ? <PlayCircle size={14} /> : <Lock size={14} />}
                   </span>
                   <p>{lecture.lectureTitle}</p>
                 </div>
@@ -82,15 +81,12 @@ const CourseDetail = () => {
             <CardContent className="p-4 flex flex-col">
               <div className="w-full aspect-video mb-4">
                 {course.lectures && course.lectures.length > 0 ? (
-                  <>
-                    {console.log("Video URL:", course.lectures[0].videoUrl)} {/* Debugging */}
-                    <ReactPlayer
-                      width="100%"
-                      height="100%"
-                      url={course.lectures[0].videoUrl} // Ensure the video URL is correct
-                      controls={true}
-                    />
-                  </>
+                  <ReactPlayer
+                    width="100%"
+                    height="100%"
+                    url={course.lectures[0].videoUrl}
+                    controls={true}
+                  />
                 ) : (
                   <p className="text-center text-gray-500">No video available</p>
                 )}

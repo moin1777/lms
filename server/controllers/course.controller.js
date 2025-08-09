@@ -70,24 +70,28 @@ export const searchCourse = async (req,res) => {
     }
 }
 
-export const getPublishedCourse = async (_,res) => {
-    try {
-        const courses = await Course.find({isPublished:true}).populate({path:"creator", select:"name photoUrl"});
-        if(!courses){
-            return res.status(404).json({
-                message:"Course not found"
-            })
-        }
-        return res.status(200).json({
-            courses,
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message:"Failed to get published courses"
-        })
+export const getPublishedCourse = async (_, res) => {
+  try {
+    const courses = await Course.find({ isPublished: true }).populate({
+      path: "creator",
+      select: "name photoUrl", // Populate creator's name and photo
+    });
+    if (!courses) {
+      return res.status(404).json({
+        message: "Courses not found",
+      });
     }
-}
+    return res.status(200).json({
+      courses,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Failed to get published courses",
+    });
+  }
+};
+
 export const getCreatorCourses = async (req,res) => {
     try {
         const userId = req.id;
@@ -156,55 +160,60 @@ export const editCourse = async (req, res) => {
   }
 };
 export const getCourseById = async (req, res) => {
-    try {
-        const { courseId } = req.params;
+  try {
+    const { courseId } = req.params;
 
-        const course = await Course.findById(courseId).populate("lectures"); // Ensure lectures are populated
-        if (!course) {
-            return res.status(404).json({
-                message: "Course not found!",
-            });
-        }
-
-        console.log("Lectures:", course.lectures); // Debugging: Log lectures to verify videoUrl
-
-        return res.status(200).json({
-            course,
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message: "Failed to get course by id",
-        });
+    const course = await Course.findById(courseId)
+      .populate("lectures")
+      .populate({ path: "creator", select: "name photoUrl" }); // Populate creator's name and photo
+    if (!course) {
+      return res.status(404).json({
+        message: "Course not found!",
+      });
     }
+
+    return res.status(200).json({
+      course,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Failed to get course by id",
+    });
+  }
 };
 
 export const createLecture = async (req, res) => {
   try {
+    console.log("Request Body:", req.body); // Debugging: Log the request body
+
     const { lectureTitle, videoUrl, publicId } = req.body;
     const { courseId } = req.params;
 
-    if (!lectureTitle || !courseId || !videoUrl) {
+    if (!lectureTitle || !videoUrl) {
       return res.status(400).json({
         message: "Lecture title and video URL are required",
       });
     }
-
-    console.log("Uploaded Video URL:", videoUrl); // Debugging: Log the video URL
 
     // Create lecture
     const lecture = await Lecture.create({ lectureTitle, videoUrl, publicId });
 
     // Add lecture to course
     const course = await Course.findById(courseId);
-    if (course) {
-      course.lectures.push(lecture._id);
-      await course.save();
+    if (!course) {
+      return res.status(404).json({
+        message: "Course not found",
+      });
     }
 
+    course.lectures.push(lecture._id);
+    await course.save();
+
     return res.status(201).json({
+      success: true,
       lecture,
-      message: "Lecture created successfully.",
+      message: "Lecture created and added to course successfully.",
     });
   } catch (error) {
     console.log(error);
@@ -327,6 +336,13 @@ export const togglePublishCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
     const { publish } = req.query; // true or false
+
+    if (!["true", "false"].includes(publish)) {
+      return res.status(400).json({
+        message: "Invalid publish parameter. Use 'true' or 'false'.",
+      });
+    }
+
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({

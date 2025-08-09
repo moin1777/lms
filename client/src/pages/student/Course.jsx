@@ -22,10 +22,10 @@ const Course = ({course}) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={course.creator?.photoUrl || "https://github.com/shadcn.png"} alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={course.creator?.photoUrl || "https://github.com/shadcn.png"} alt="Instructor" />
+              <AvatarFallback>{course.creator?.name?.[0] || "N/A"}</AvatarFallback>
             </Avatar>
-            <h1 className="font-medium text-sm">{course.creator?.name}</h1>
+            <h1 className="font-medium text-sm">{course.creator?.name || "Unknown"}</h1>
           </div>
           <Badge className={'bg-blue-600 text-white px-2 py-1 text-xs rounded-full'}>
             {course.courseLevel}

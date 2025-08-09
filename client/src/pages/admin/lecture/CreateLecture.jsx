@@ -41,17 +41,25 @@ const CreateLecture = () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+
       if (response.data.success) {
         toast.success("Video uploaded successfully.");
         return response.data.data; // Return video URL and public ID
+      } else {
+        toast.error(response.data.message || "Failed to upload video.");
       }
     } catch (error) {
-      console.log(error);
+      console.log("Frontend Upload Error:", error); // Log the error for debugging
       toast.error("Failed to upload video.");
     }
   };
 
   const createLectureHandler = async () => {
+    if (!lectureTitle || !selectedFile) {
+      toast.error("Lecture title and video file are required.");
+      return;
+    }
+
     const videoData = await handleVideoUpload(selectedFile); // Upload video first
     if (videoData) {
       await createLecture({
@@ -60,6 +68,10 @@ const CreateLecture = () => {
         videoUrl: videoData.url,
         publicId: videoData.public_id,
       });
+      toast.success("Lecture created successfully.");
+      refetch(); // Refresh the lecture list
+    } else {
+      toast.error("Failed to upload video.");
     }
   };
 

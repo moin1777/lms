@@ -14,9 +14,9 @@ const BuyCourseButton = ({ courseId }) => {
 
   useEffect(() => {
     if (isSuccess) {
-      if (data?.orderId) {
+      if (data?.orderId && data?.key) {
         const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+          key: data.key, // Use the Razorpay key from the backend response
           amount: data.amount,
           currency: data.currency,
           order_id: data.orderId,
